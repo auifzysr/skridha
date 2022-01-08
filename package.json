@@ -1,0 +1,23 @@
+{
+  "name": "skridha",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/auifzysr/skridha.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/auifzysr/skridha/issues"
+  },
+  "homepage": "https://github.com/auifzysr/skridha#readme",
+  "dependencies": {
+    "puppeteer": "^13.0.1"
+  }
+}
