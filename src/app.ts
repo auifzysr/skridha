@@ -1,20 +1,30 @@
 import puppeteer from 'puppeteer';
 import express from 'express';
+import bodyParser from 'body-parser';
 import { Response, Request } from 'express';
 
-const url = "https://example.com";
-const outDir = "./";
+interface RequestWithQueryParams extends Request {
+  query: {
+    url: string | undefined
+    to: string | undefined
+  }
+}
 
 const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.set("port", process.env.PORT || 3000);
-app.get("/api", (req: Request, res: Response) => {
+app.get("/api", (req: RequestWithQueryParams, res: Response) => {
+  const url = req.query.url;
+  const outDir = req.query.to;
+
   res.send("test");
   (async () => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    await page.goto(url);
+    await page.goto(url || 'https://example.com');
     await page.screenshot({
-      path: `${outDir}example.png`
+      path: `${outDir || "."}example.png`
     });
     await browser.close();
   })();

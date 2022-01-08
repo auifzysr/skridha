@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/auifzysr/skridha#readme",
   "dependencies": {
+    "body-parser": "^1.19.1",
     "express": "^4.17.2",
     "puppeteer": "^13.0.1"
   },
