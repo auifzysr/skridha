@@ -1,15 +1,24 @@
-// import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer';
 import express from 'express';
+import { Response, Request } from 'express';
 
-// if (process.argv.length !== 4){
-//   process.exit(1);  
-// }
-
-// const url = process.argv[2];
-// const outDir = process.argv[3];
+const url = "https://example.com";
+const outDir = "./";
 
 const app = express();
 app.set("port", process.env.PORT || 3000);
+app.get("/api", (req: Request, res: Response) => {
+  res.send("test");
+  (async () => {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto(url);
+    await page.screenshot({
+      path: `${outDir}example.png`
+    });
+    await browser.close();
+  })();
+});
 
 const server = app.listen(app.get("port"), () => {
   console.log(
@@ -21,14 +30,3 @@ const server = app.listen(app.get("port"), () => {
 });
 
 export default server;
-
-
-// (async () => {
-//   const browser = await puppeteer.launch();
-//   const page = await browser.newPage();
-//   await page.goto(url);
-//   await page.screenshot({
-//     path: `${outDir}example.png`
-//   });
-//   await browser.close();
-// })();
