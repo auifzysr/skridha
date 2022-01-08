@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 if (process.argv.length !== 4){
   process.exit(1);  
