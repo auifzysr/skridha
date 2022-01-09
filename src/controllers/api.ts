@@ -2,6 +2,8 @@ import { RequestWithQueryParams } from "../types/request-with-query-params";
 import puppeteer from 'puppeteer';
 import { Response } from 'express';
 
+const scFilename = 'example.png';
+
 export const getApi = (token: string, signingSecret: string) => (req: RequestWithQueryParams, res: Response) => {
     const url = req.query.url;
     const outDir = req.query.to;
@@ -13,7 +15,7 @@ export const getApi = (token: string, signingSecret: string) => (req: RequestWit
         const page = await browser.newPage();
         await page.goto(url || 'https://example.com');
         await page.screenshot({
-        path: `${outDir || "."}example.png`
+        path: `${outDir || "./"}${scFilename}`
         });
         await browser.close();
     })();
