@@ -3,10 +3,11 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { Response, Request } from 'express';
 
+type queryKeys = 'url' | 'to';
+
 interface RequestWithQueryParams extends Request {
   query: {
-    url: string | undefined
-    to: string | undefined
+    [key in queryKeys]: string
   }
 }
 
