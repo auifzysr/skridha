@@ -1,15 +1,9 @@
 import puppeteer from 'puppeteer';
 import express from 'express';
 import bodyParser from 'body-parser';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 
-type queryKeys = 'url' | 'to';
-
-interface RequestWithQueryParams extends Request {
-  query: {
-    [key in queryKeys]: string
-  }
-}
+import { RequestWithQueryParams } from './types/request-with-query-params';
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
