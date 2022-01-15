@@ -2,7 +2,6 @@ import { App } from '@slack/bolt';
 import puppeteer from 'puppeteer'
 import dotenv from 'dotenv';
 import path from 'path';
-import fs from 'fs';
 
 const confResult = dotenv.config({
   path: path.resolve(process.cwd(), ".env"),
@@ -19,8 +18,6 @@ const slackApp = new App({
 });
 
 const url = "http://example.com";
-const outDir = "./";
-const scFilename = "example.png";
 
 slackApp.command('/skr', async({ack, client, say, body}) => {
     ack();
@@ -28,9 +25,7 @@ slackApp.command('/skr', async({ack, client, say, body}) => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto(url || 'https://example.com');
-    await page.screenshot({
-      path: `${outDir || "./"}${scFilename}`
-      });
+    const buf = await page.screenshot() as Buffer;
     await browser.close();
 
     const channel_id = body.channel_id;
@@ -39,7 +34,7 @@ slackApp.command('/skr', async({ack, client, say, body}) => {
       const result = client.files.upload({
         channels: channel_id,
         initial_comment: "uploaded file",
-        file: fs.createReadStream(`${outDir || "./"}${scFilename}`)
+        file: buf
       });
       console.log(result);
     }
