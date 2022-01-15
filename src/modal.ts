@@ -64,7 +64,7 @@ export function createModal(privateMetadata: any): ModalView {
             },
             {
                 type: "section",
-                block_id: "block_is_full_screen",
+                block_id: "block_is_full_page",
                 text: {
                     type: "plain_text",
                     text: " ",
@@ -76,13 +76,13 @@ export function createModal(privateMetadata: any): ModalView {
                         {
                             text: {
                                 type: "plain_text",
-                                text: "Full screen",
+                                text: "Full page",
                                 emoji: true
                             },
-                            value: "is_full_screen"
+                            value: "is_full_page"
                         }
                     ],
-                    action_id: "action_is_full_screen"
+                    action_id: "action_is_full_page"
                 },
             }
         ]

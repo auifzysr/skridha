@@ -46,18 +46,28 @@ slackApp.view("submit", async ({client, body, ack, view}) => {
   const url = body.view?.state.values.block_url.action_url.value as string;
   const width = Number(body.view?.state.values.block_width.action_width.value);
   const height = Number(body.view?.state.values.block_height.action_height.value);
+  const is_full_page = !!body.view?.state.values.block_is_full_page.action_is_full_page.selected_options?.length;
+
+  let screenshot_options;
+  if (is_full_page) {
+    screenshot_options = {
+      fullPage: is_full_page
+    };
+  } else {
+    screenshot_options = {
+      clip: {
+        x: 0,
+        y: 0,
+        width: width,
+        height: height
+      }
+    };
+  }
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(url);
-  const buf = await page.screenshot({
-    clip: {
-      x: 0,
-      y: 0,
-      width: width,
-      height: height
-    }
-  }) as Buffer;
+  const buf = await page.screenshot(screenshot_options) as Buffer;
   await browser.close();
 
   const channel_id = JSON.parse(view.private_metadata).channel_id;
@@ -75,7 +85,7 @@ slackApp.view("submit", async ({client, body, ack, view}) => {
   }
 });
 
-slackApp.action("action_is_full_screen", async ({ack}) => {
+slackApp.action("action_is_full_page", async ({ack}) => {
   await ack();
 });
 
