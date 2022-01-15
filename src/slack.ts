@@ -75,6 +75,10 @@ slackApp.view("submit", async ({client, body, ack, view}) => {
   }
 });
 
+slackApp.action("action_is_full_screen", async ({ack}) => {
+  await ack();
+});
+
 (async () => {
     await slackApp.start();
     console.log("waiting for requests from slack API");
