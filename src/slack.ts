@@ -2,6 +2,7 @@ import { App } from '@slack/bolt';
 import puppeteer from 'puppeteer'
 import dotenv from 'dotenv';
 import path from 'path';
+import { createModal } from './modal';
 
 const confResult = dotenv.config({
   path: path.resolve(process.cwd(), ".env"),
@@ -20,29 +21,47 @@ const slackApp = new App({
 const url = "http://example.com";
 
 slackApp.command('/skr', async({ack, client, say, body}) => {
-    ack();
+  ack();
 
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto(url || 'https://example.com');
-    const buf = await page.screenshot() as Buffer;
-    await browser.close();
+  let modal_ui = createModal(JSON.stringify({
+    channel_id: body.channel_id
+  }));
+  
+  try {
+    const result = await client.views.open({
+      trigger_id: body.trigger_id,
+      view: modal_ui
+    });
+    console.log(result);
+  } catch (error) {
+    console.log(error);
+  }
 
-    const channel_id = body.channel_id;
-    
-    try {
-      const result = client.files.upload({
-        channels: channel_id,
-        initial_comment: "uploaded file",
-        file: buf
-      });
-      console.log(result);
-    }
-    catch (error) {
-      console.log(error);
-    }
+  say(`get request`);
+});
 
-    say(`get request`);
+slackApp.view("submit", async ({client, body, ack, view}) => {
+  ack();
+
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto(url || 'https://example.com');
+  const buf = await page.screenshot() as Buffer;
+  await browser.close();
+
+  const channel_id = JSON.parse(view.private_metadata).channel_id;
+  
+  try {
+    const result = client.files.upload({
+      channels: channel_id,
+      initial_comment: "uploaded file",
+      file: buf
+    });
+    console.log(result);
+  }
+  catch (error) {
+    console.log(error);
+  }
 });
 
 (async () => {
