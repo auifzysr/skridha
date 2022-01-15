@@ -18,8 +18,6 @@ const slackApp = new App({
     port: 3000,
 });
 
-const url = "http://example.com";
-
 slackApp.command('/skr', async({ack, client, say, body}) => {
   ack();
 
@@ -43,10 +41,23 @@ slackApp.command('/skr', async({ack, client, say, body}) => {
 slackApp.view("submit", async ({client, body, ack, view}) => {
   ack();
 
+  console.log(body.view?.state.values);
+
+  const url = body.view?.state.values.block_url.action_url.value as string;
+  const width = Number(body.view?.state.values.block_width.action_width.value);
+  const height = Number(body.view?.state.values.block_height.action_height.value);
+
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  await page.goto(url || 'https://example.com');
-  const buf = await page.screenshot() as Buffer;
+  await page.goto(url);
+  const buf = await page.screenshot({
+    clip: {
+      x: 0,
+      y: 0,
+      width: width,
+      height: height
+    }
+  }) as Buffer;
   await browser.close();
 
   const channel_id = JSON.parse(view.private_metadata).channel_id;

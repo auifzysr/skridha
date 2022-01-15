@@ -18,6 +18,7 @@ export function createModal(privateMetadata: any): ModalView {
         blocks: [
             {
                 type: "input",
+                block_id: "block_url",
                 element: {
                     type: "plain_text_input",
                     action_id: "action_url"
@@ -30,6 +31,7 @@ export function createModal(privateMetadata: any): ModalView {
             },
             {
                 type: "input",
+                block_id: "block_width",
                 element: {
                     type: "plain_text_input",
                     action_id: "action_width"
@@ -42,6 +44,7 @@ export function createModal(privateMetadata: any): ModalView {
             },
             {
                 type: "input",
+                block_id: "block_height",
                 element: {
                     type: "plain_text_input",
                     action_id: "action_height"
