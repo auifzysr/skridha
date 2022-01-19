@@ -31,7 +31,7 @@ app.post('/api/prtsc', async (req, res, next) => {
     return next(err);
   }
 
-  await res.status(201).json();
+  res.status(201).json();
 
   let screenshot_options = {
     fullPage: true
