@@ -71,42 +71,7 @@ slackApp.view("submit", async ({client, body, ack, view}) => {
           console.log("completed")
       });
 
-  // let screenshot_options;
-  // if (is_full_page) {
-  //   screenshot_options = {
-  //     fullPage: is_full_page
-  //   };
-  // } else {
-  //   screenshot_options = {
-  //     clip: {
-  //       x: 0,
-  //       y: 0,
-  //       width: width,
-  //       height: height
-  //     }
-  //   };
-  // }
-
-  // const browser = await puppeteer.launch();
-  // const page = await browser.newPage();
-  // await page.goto(url);
-  // const buf = await page.screenshot(screenshot_options) as Buffer;
-  // await browser.close();
-
-  // const channel_id = JSON.parse(view.private_metadata).channel_id;
-  
-  // try {
-  //   const result = client.files.upload({
-  //     channels: channel_id,
-  //     initial_comment: "uploaded file",
-  //     file: buf
-  //   });
-  //   console.log(result);
-  // }
-  // catch (error) {
-  //   console.log(error);
-  // }
-});
+  });
 
 slackApp.action("action_is_full_page", async ({ack}) => {
   await ack();
