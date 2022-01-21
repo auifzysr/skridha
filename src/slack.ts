@@ -1,8 +1,10 @@
 import { App } from '@slack/bolt';
-import puppeteer from 'puppeteer'
+//import puppeteer from 'puppeteer'
 import dotenv from 'dotenv';
 import path from 'path';
 import { createModal } from './modal';
+import axios, { AxiosRequestConfig } from "axios";
+
 
 const confResult = dotenv.config({
   path: path.resolve(process.cwd(), ".env"),
@@ -48,41 +50,62 @@ slackApp.view("submit", async ({client, body, ack, view}) => {
   const height = Number(body.view?.state.values.block_height.action_height.value);
   const is_full_page = !!body.view?.state.values.block_is_full_page.action_is_full_page.selected_options?.length;
 
-  let screenshot_options;
-  if (is_full_page) {
-    screenshot_options = {
-      fullPage: is_full_page
-    };
-  } else {
-    screenshot_options = {
-      clip: {
-        x: 0,
-        y: 0,
+  const options: AxiosRequestConfig = {
+    params: {
+        url: url,
+        channel_id: process.env.DEFAULT_SLACK_CHANNEL_ID,
         width: width,
-        height: height
-      }
-    };
+        height: height,
+        is_full_page: is_full_page
+    }
   }
 
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto(url);
-  const buf = await page.screenshot(screenshot_options) as Buffer;
-  await browser.close();
+  axios.post("http://localhost:9000/api/prtsc", null, options)
+      .then((res) => {
+          console.log(res.data)
+      })
+      .catch((error) => {
+          console.log(error)
+      })
+      .then(() => {
+          console.log("completed")
+      });
 
-  const channel_id = JSON.parse(view.private_metadata).channel_id;
+  // let screenshot_options;
+  // if (is_full_page) {
+  //   screenshot_options = {
+  //     fullPage: is_full_page
+  //   };
+  // } else {
+  //   screenshot_options = {
+  //     clip: {
+  //       x: 0,
+  //       y: 0,
+  //       width: width,
+  //       height: height
+  //     }
+  //   };
+  // }
+
+  // const browser = await puppeteer.launch();
+  // const page = await browser.newPage();
+  // await page.goto(url);
+  // const buf = await page.screenshot(screenshot_options) as Buffer;
+  // await browser.close();
+
+  // const channel_id = JSON.parse(view.private_metadata).channel_id;
   
-  try {
-    const result = client.files.upload({
-      channels: channel_id,
-      initial_comment: "uploaded file",
-      file: buf
-    });
-    console.log(result);
-  }
-  catch (error) {
-    console.log(error);
-  }
+  // try {
+  //   const result = client.files.upload({
+  //     channels: channel_id,
+  //     initial_comment: "uploaded file",
+  //     file: buf
+  //   });
+  //   console.log(result);
+  // }
+  // catch (error) {
+  //   console.log(error);
+  // }
 });
 
 slackApp.action("action_is_full_page", async ({ack}) => {
