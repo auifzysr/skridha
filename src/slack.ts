@@ -41,12 +41,11 @@ slackApp.command('/skr', async({ack, client, say, body}) => {
   say(`get request`);
 });
 
-slackApp.view("submit", async ({client, body, ack, view}) => {
+slackApp.view("submit", async ({body, ack}) => {
   ack();
 
-  console.log(body.view?.state.values);
-
   const url = body.view?.state.values.block_url.action_url.value as string;
+  const channel_id = JSON.parse(body.view?.private_metadata).channel_id as string;
   const width = Number(body.view?.state.values.block_width.action_width.value);
   const height = Number(body.view?.state.values.block_height.action_height.value);
   const is_full_page = !!body.view?.state.values.block_is_full_page.action_is_full_page.selected_options?.length;
@@ -54,7 +53,7 @@ slackApp.view("submit", async ({client, body, ack, view}) => {
   const options: AxiosRequestConfig = {
     params: {
         url: url,
-        channel_id: process.env.DEFAULT_SLACK_CHANNEL_ID,
+        channel_id: channel_id,
         width: width,
         height: height,
         is_full_page: is_full_page
