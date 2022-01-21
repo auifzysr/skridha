@@ -1,5 +1,4 @@
 import { App } from '@slack/bolt';
-//import puppeteer from 'puppeteer'
 import dotenv from 'dotenv';
 import path from 'path';
 import { createModal } from './modal';
@@ -12,6 +11,8 @@ const confResult = dotenv.config({
 if (confResult.error) {
   throw confResult.error
 }
+
+const prtscServerURL = `${process.env.PRTSC_APP_SERVER_HOST || "https://localhost"}:${process.env.PRTSC_APP_SERVER_PORT || "9000"}`
 
 const slackApp = new App({
     token: process.env.SLACK_BOT_TOKEN,
@@ -60,7 +61,7 @@ slackApp.view("submit", async ({client, body, ack, view}) => {
     }
   }
 
-  axios.post("http://localhost:9000/api/prtsc", null, options)
+  axios.post(`${prtscServerURL}/api/prtsc`, null, options)
       .then((res) => {
           console.log(res.data)
       })

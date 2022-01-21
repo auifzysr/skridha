@@ -17,7 +17,7 @@ if (confResult.error) {
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.set("port", Number(process.env.PORT) || 9000);
+app.set("port", Number(process.env.PRTSC_APP_SERVER_PORT) || 9000);
 app.get("/api", apiController.getApi(process.env.SLACK_BOT_TOKEN as string, process.env.SLACK_SIGNING_SECRET as string));
 
 const slackClient = new WebClient(process.env.SLACK_BOT_TOKEN, {
