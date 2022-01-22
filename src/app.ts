@@ -39,6 +39,7 @@ app.post('/api/prtsc', async (req, res, next) => {
 
   res.status(201).json();
 
+  // TODO: fix ambiguous conditions: width, height, fullPage
   let screenshot_options: ScreenshotOptions;
   if (is_full_page) {
     screenshot_options = {
@@ -55,8 +56,12 @@ app.post('/api/prtsc', async (req, res, next) => {
     };
   }
 
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({defaultViewport: null});
   const page = await browser.newPage();
+  await page.setViewport({
+    width: width,
+    height: height
+  })
   await page.goto(url);
   const buf = await page.screenshot(screenshot_options) as Buffer;
   await browser.close();
