@@ -1,22 +1,60 @@
-import { RequestWithQueryParams } from "../types/request-with-query-params";
-import puppeteer from 'puppeteer';
-import { Response } from 'express';
+//import { RequestWithQueryParams } from "../types/request-with-query-params";
+import { NextFunction, Request, Response } from 'express';
+import puppeteer, { ScreenshotOptions } from 'puppeteer'
+const { WebClient, LogLevel } = require("@slack/web-api");
 
-const scFilename = 'example.png';
+export const prtscHandler = (slackBotToken: string) => (req: Request, res: Response , next: NextFunction) => {
+  const slackClient = new WebClient(slackBotToken, {
+    logLevel: LogLevel.DEBUG
+  });
+  if(!req.query.url || !req.query.channel_id){
+  const err = new Error('url is required');
+    res.status(400);
+    return next(err);
+  }
 
-export const getApi = (token: string, signingSecret: string) => (req: RequestWithQueryParams, res: Response) => {
-    const url = req.query.url;
-    const outDir = req.query.to;
+  const url = req.query.url as string;
+  const channel_id = req.query.channel_id as string;
+  const width = Number(req.query.width) || 1920;
+  const height = Number(req.query.height) || 1080;
+  const is_full_page = !!req.query.is_full_screen || false;
 
-    res.send("test");
+  res.status(201).json();
 
-    (async () => {
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        await page.goto(url || 'https://example.com');
-        await page.screenshot({
-        path: `${outDir || "./"}${scFilename}`
+  let screenshot_options: ScreenshotOptions;
+  if (is_full_page) {
+    screenshot_options = {
+      fullPage: is_full_page
+    };
+  } else {
+    screenshot_options = {
+      clip: {
+        x: 0,
+        y: 0,
+        width: width,
+        height: height
+      }
+    };
+  }
+
+  (async () => {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto(url);
+    const buf = await page.screenshot(screenshot_options) as Buffer;
+    await browser.close();
+
+    try {
+        const result = await slackClient.files.upload({
+        channels: channel_id,
+        initial_comment: "prtsc invoked by api",
+        file: buf
         });
-        await browser.close();
-    })();
+        console.log(result);
+    } catch (error) {
+        console.error(error);
+    }
+  })();
 };
+
+export default prtscHandler;

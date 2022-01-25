@@ -1,11 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import * as apiController from './controllers/api';
+import prtscHandler from './controllers/api';
 import dotenv from 'dotenv';
 import path from 'path';
-
-import puppeteer, { ScreenshotOptions } from 'puppeteer'
-const { WebClient, LogLevel } = require("@slack/web-api");
 
 const confResult = dotenv.config({
   path: path.resolve(process.cwd(), ".env"),
@@ -19,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.set("port", Number(process.env.PRTSC_APP_SERVER_PORT) || 9000);
 
+<<<<<<< HEAD
 const slackClient = new WebClient(process.env.SLACK_BOT_TOKEN, {
   logLevel: LogLevel.DEBUG
 });
@@ -78,5 +76,8 @@ app.post('/api/prtsc', async (req, res, next) => {
   }
 
 })
+=======
+app.post('/api/prtsc', prtscHandler(process.env.SLACK_BOT_TOKEN as string));
+>>>>>>> Move controllers
 
 export default app;
