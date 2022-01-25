@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import puppeteer, { ScreenshotOptions } from 'puppeteer'
 const { WebClient, LogLevel } = require("@slack/web-api");
 
+// TODO: typedef Request with params
 export const prtscHandler = (slackBotToken: string) => (req: Request, res: Response , next: NextFunction) => {
   const slackClient = new WebClient(slackBotToken, {
     logLevel: LogLevel.DEBUG
