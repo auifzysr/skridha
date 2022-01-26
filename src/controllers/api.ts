@@ -1,10 +1,10 @@
-//import { RequestWithQueryParams } from "../types/request-with-query-params";
-import { NextFunction, Request, Response } from 'express';
+import { RequestWithQueryParams } from "../types/request-with-query-params";
+import { NextFunction, Response } from 'express';
 import puppeteer, { ScreenshotOptions } from 'puppeteer'
 const { WebClient, LogLevel } = require("@slack/web-api");
 
 // TODO: typedef Request with params
-export const prtscHandler = (slackBotToken: string) => (req: Request, res: Response , next: NextFunction) => {
+export const prtscHandler = (slackBotToken: string) => (req: RequestWithQueryParams, res: Response , next: NextFunction) => {
   const slackClient = new WebClient(slackBotToken, {
     logLevel: LogLevel.DEBUG
   });
@@ -18,7 +18,7 @@ export const prtscHandler = (slackBotToken: string) => (req: Request, res: Respo
   const channel_id = req.query.channel_id as string;
   const width = Number(req.query.width) || 1920;
   const height = Number(req.query.height) || 1080;
-  const is_full_page = !!req.query.is_full_screen || false;
+  const is_full_page = !!req.query.is_full_page || false;
 
   res.status(201).json();
 
