@@ -8,14 +8,6 @@ export const prtscHandler = (slackBotToken: string) => (req: RequestWithQueryPar
   const slackClient = new WebClient(slackBotToken, {
     logLevel: LogLevel.DEBUG
   });
-  if(!req.query.url){
-    res.status(400);
-    return next(new Error('url is required'));
-  }
-  if(!req.query.channel_id){
-    res.status(400);
-    return next(new Error('channel_id is required'));
-  }
 
   const url = req.query.url as string;
   const channel_id = req.query.channel_id as string;
