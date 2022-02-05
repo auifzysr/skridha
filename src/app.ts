@@ -1,9 +1,10 @@
-import express, { Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import prtscHandler from './controllers/api';
 import dotenv from 'dotenv';
 import path from 'path';
 import { RequestWithQueryParams } from './types/request-with-query-params';
+import createSlackAppReceiver from './slack';
 
 const confResult = dotenv.config({
   path: path.resolve(process.cwd(), ".env"),
@@ -12,10 +13,14 @@ if (confResult.error) {
   throw confResult.error
 }
 
-const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.set("port", Number(process.env.PRTSC_APP_SERVER_PORT) || 9000);
+const { receiver } = createSlackAppReceiver(
+  process.env.SLACK_BOT_TOKEN as string,
+  process.env.SLACK_SIGNING_SECRET as string,
+);
+receiver.app.use(bodyParser.urlencoded({ extended: false }));
+receiver.app.use(bodyParser.json());
+receiver.app.set("port", Number(process.env.SLACK_APP_SERVER_PORT) || 3000);
+receiver.app.use(receiver.router);
 
 const paramRequirementCheck = (requiredParams: string[]) => (req: RequestWithQueryParams, res: Response, next: NextFunction) => {
   if (!requiredParams.every((param: string) => {
@@ -27,6 +32,7 @@ const paramRequirementCheck = (requiredParams: string[]) => (req: RequestWithQue
   next();
 };
 
-app.post('/api/prtsc', paramRequirementCheck(['url','channel_id']), prtscHandler(process.env.SLACK_BOT_TOKEN as string));
+receiver.app.post('/api/prtsc', paramRequirementCheck(['url','channel_id']), prtscHandler(process.env.SLACK_BOT_TOKEN as string));
 
+const app = receiver.app;
 export default app;
